@@ -1,0 +1,13 @@
+{
+  "port": 5000,
+  "dynamo_creds_path": "aws/creds.json",
+
+  "email": {
+    "host": "smtp.ethereal.email",
+    "port": 587,
+    "auth": {
+      "user": "alessandra.bechtelar10@ethereal.email",
+      "pass": "dbEXwhaNRnGxJgraBH"
+    }
+  }
+}

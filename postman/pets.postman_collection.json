@@ -1,0 +1,582 @@
+{
+	"info": {
+		"_postman_id": "2a7ef74e-8537-46d1-ba81-5879ccec9527",
+		"name": "pets",
+		"description": "Skeleton API pets tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/users/signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing up with new user should be with status 201 and new user in body', function () {\r",
+							"    pm.response.to.have.status(201)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"email\": \"pets@domain.com\",\r",
+							"        \"username\": \"Andrey\"\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"pets@domain.com\",\n    \"username\": \"Andrey\",\n    \"password\": \"very_safe_password\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/signin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing in with right credentials should be with status 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Body should have auth and refresh tokens', () => {\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.accessToken).to.be.a('string')\r",
+							"    pm.expect(body.refreshToken).to.be.a('string')\r",
+							"\r",
+							"    pm.collectionVariables.set('accessToken', body.accessToken)\r",
+							"    pm.collectionVariables.set('refreshToken', body.refreshToken)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"pets@domain.com\",\r\n    \"password\": \"very_safe_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On adding new pet should return status 201 and new pet in body', () => {\r",
+							"    pm.response.to.have.status(201)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"animal\": \"cat\",\r",
+							"        \"name\": \"Marta\",\r",
+							"        \"age\": 5\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"animal\": \"cat\",\r\n    \"name\": \"Marta\",\r\n    \"age\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/pets",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets/:name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On updating pet should return status 200 and updated pet in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"animal\": \"cat\",\r",
+							"        \"name\": \"Marta\",\r",
+							"        \"age\": 3\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"age\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/pets/:name",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "Marta"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets/:name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On getting existing pet should return status 200 and pet in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body).to.deep.equal({\r",
+							"        \"animal\": \"cat\",\r",
+							"        \"name\": \"Marta\",\r",
+							"        \"age\": 3\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pets/:name",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "Marta"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets/:name with nonexistent pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On getting nonexistent pet should return status 404 and success false in body', () => {\r",
+							"    pm.response.to.have.status(404)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.success).to.eql(false)\r",
+							"    pm.expect(body.message).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pets/:name",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "Unknown"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets to add another pet to user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On adding new pet should return status 201 and new pet in body', () => {\r",
+							"    pm.response.to.have.status(201)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"animal\": \"dog\",\r",
+							"        \"name\": \"Sparky\",\r",
+							"        \"age\": 1\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"animal\": \"dog\",\r\n    \"name\": \"Sparky\",\r\n    \"age\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/pets",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets with wrong params",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On adding new pet with wrong params should return status 400 and success false in body', () => {\r",
+							"    pm.response.to.have.status(400)\r",
+							"\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.success).to.eql(false)\r",
+							"    pm.expect(body.message).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"animal\": \"dog\",\r\n    \"name\": \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/pets",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On getting all pets should return status 200 and all user pets in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal([\r",
+							"        {\r",
+							"            \"animal\": \"cat\",\r",
+							"            \"name\": \"Marta\",\r",
+							"            \"age\": 3\r",
+							"        },\r",
+							"        {\r",
+							"            \"animal\": \"dog\",\r",
+							"            \"name\": \"Sparky\",\r",
+							"            \"age\": 1\r",
+							"        }\r",
+							"    ])\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pets",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets/:name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On deleting existing pet should return status 200 and success in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"success\": true,\r",
+							"        \"message\": \"OK\"\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pets/:name",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "Marta"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/pets/:name for second pet",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On deleting existing pet should return status 200 and success in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"success\": true,\r",
+							"        \"message\": \"OK\"\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pets/:name",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pets",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "Sparky"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Deleting existing user should be with status 200 and success true in body', function() {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({ \"success\": true, \"message\": \"OK\" })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": "pets@domain.com",
+							"description": "(Required) User email"
+						}
+					]
+				},
+				"description": "Deletes usser by email"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api/v1"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	]
+}

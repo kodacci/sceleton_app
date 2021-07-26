@@ -1,0 +1,388 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Sceleton API
+  description: Sceleton test app API
+  contact:
+    name: Andrey Ryabtsev
+host: 'localhost:5000'
+basePath: /api/v1
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+    /users/signup:
+        post:
+            produces: ['application/json']
+            parameters:
+                - in: body
+                  name: user
+                  schema:
+                      $ref: '#/definitions/user'
+            responses:
+                201:
+                    description: Successfully created new user
+                    schema:
+                        $ref: '#/definitions/status'
+                400:
+                    description: Bad parameters
+                    schema:
+                        $ref: '#/definitions/status'
+                409:
+                    description: User with specified email already exists
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Internal server error
+                    schema:
+                        $ref: '#/definitions/status'
+    /users/signin:
+        post:
+            produces: ['application/json']
+            parameters:
+                - in: body
+                  name: credentials
+                  schema:
+                      type: object
+                      required:
+                          - email
+                          - password
+                      properties:
+                          email:
+                              type: string
+                          password:
+                              type: string
+            responses:
+                200:
+                    description: Successfully signed in
+                    schema:
+                        $ref: '#/definitions/token_pair'
+                401:
+                    description: Bad credentials
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/status'
+    /users/refresh_token:
+        post:
+            description: Refresh access token
+            produces: [application/json]
+            parameters:
+                - in: body
+                  name: token
+                  schema:
+                      type: object
+                      required:
+                          - refreshToken
+                      properties:
+                          refreshToken:
+                              type: string
+            responses:
+                200:
+                    description: Successfully refreshed access token
+                    schema:
+                        $ref: '#/definitions/token_pair'
+                401:
+                    description: Bad credentials
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/status'
+    /users/reset_password/{email}:
+        post:
+            description: Send token for password reset on email
+            produces: [appcliation/json]
+            parameters:
+                - in: path
+                  name: email
+                  type: string
+                  required: true
+                  description: User email
+            responses:
+                200:
+                    description: Successfully sent reset token
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/status'
+    /users/reset_password/set_new/{token}:
+        post:
+            description: Set new password using reset token
+            produces: [application/json]
+            parameters:
+                - in: path
+                  name: token
+                  type: string
+                  required: true
+                  description: Reset token
+                - in: body
+                  name: new_password
+                  required: true
+                  schema:
+                      type: object
+                      required:
+                          - password
+                      properties:
+                          password:
+                              type: string
+            responses:
+                200:
+                    description: Successfully changed password
+                    schema:
+                        $ref: '#/definitions/status'
+                400:
+                    description: Invalid token
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/status'
+    /users/{email}:
+        get:
+            description: Returns details about a particular user
+            produces: [application/json]
+            parameters:
+              - in: path
+                name: email
+                type: string
+                required: true
+                description: User email
+            responses:
+              200:
+                description: Successfully sent requested user details
+                schema:
+                  $ref: '#/definitions/user'
+              404:
+                  description: Specified user does not exist
+                  schema:
+                      $ref: '#/definitions/user'
+              500:
+                  description: Server error
+                  schema:
+                      $ref: '#/definitions/user'
+        patch:
+            description: Update user data
+            produces: [application/json]
+            parameters:
+                - in: path
+                  name: email
+                  type: string
+                  required: true
+                  description: User email
+                - in: body
+                  name: update_data
+                  required: true
+                  schema:
+                      type: object
+                      properties:
+                        username:
+                            type: string
+                            minLength: 3
+                        password:
+                            type: string
+                            minLength: 8
+            responses:
+                200:
+                    description: Successfully updated user data
+                    schema:
+                        $ref: '#/definitions/user'
+                400:
+                    description: Bad parameters
+                    schema:
+                        $ref: '#/definitions/status'
+                404:
+                    description: Specified user does not exist
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/user'
+        delete:
+            description: Deletes user by email
+            parameters:
+                - in: path
+                  name: email
+                  type: string
+                  pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$
+                  required: true
+                  description: User email
+            responses:
+                200:
+                    description: Successfully sent requested user details
+                    schema:
+                       $ref: '#/definitions/user'
+                404:
+                    description: Specified user does not exist
+                    schema:
+                        $ref: '#/definitions/status'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/user'
+    /pets:
+        get:
+            description: Search for pets by current auth user
+            responses:
+                200:
+                    description: Received pets by auth user
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/definitions/pet'
+                500:
+                    description: Server error
+                    schema:
+                        $ref: '#/definitions/status'
+        post:
+            description: Add new animal for auth user
+            parameters:
+                - in: body
+                  name: pet
+                  required: true
+                  schema:
+                      $ref: '#/definitions/pet'
+            responses:
+                201:
+                    description: Successfully added new pet
+                    schema:
+                        $ref: '#/definitions/pet'
+                400:
+                    description: Bad parameters
+                    schema:
+                        $ref: '#/definitions/status'
+                409:
+                    description: Pet with same name already exists
+                    schema:
+                        $ref: '#/definitions/status'
+    /pets/{name}:
+        get:
+            parameters:
+                - in: path
+                  name: name
+                  required: true
+                  type: string
+                  minLength: 1
+            responses:
+                200:
+                    description: Successfully found pet by name
+                    schema:
+                        $ref: '#/definitions/pet'
+                404:
+                    description: Pet not found
+                    schema:
+                        $ref: '#/definitions/status'
+        patch:
+            parameters:
+                - in: path
+                  name: name
+                  required: true
+                  type: string
+                  minLength: 1
+                - in: body
+                  name: pet_data
+                  required: true
+                  schema:
+                      $ref: '#/definitions/pet'
+            responses:
+                200:
+                    description: Successfully updated pet by name
+                    schema:
+                        $ref: '#/definitions/pet'
+                404:
+                    description: Pet not found
+                    schema:
+                        $ref: '#/definitions/status'
+                400:
+                    description: Bad parameters
+                    schema:
+                        $ref: '#/definitions/status'
+        delete:
+            parameters:
+                - in: path
+                  name: name
+                  required: true
+                  type: string
+                  minLength: 1
+            responses:
+                200:
+                    description: Successfully deleted pet by name
+                    schema:
+                        $ref: '#/definitions/status'
+                404:
+                    description: Pet not found
+                    schema:
+                        $ref: '#/definitions/status'
+
+definitions:
+    user:
+      type: object
+      required:
+          - email
+          - username
+          - password
+      properties:
+          email:
+              type: string
+              pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$
+          username:
+              type: string
+          password:
+              type: string
+              minLength: 8
+    status:
+        type: object
+        required:
+            - success
+            - message
+        properties:
+            success:
+                type: boolean
+            message:
+                type: string
+    token_pair:
+        type: object
+        required:
+            - refreshToken
+            - authToken
+        properties:
+            refreshToken:
+                type: string
+            authToken:
+                type: string
+    pet:
+        type: object
+        required:
+            - name
+            - animal
+            - age
+        properties:
+            name:
+                type: string
+                minLength: 1
+            animal:
+                type: string
+            age:
+                type: integer
+                format: int32
+    pet_update:
+        type: object
+        properties:
+            name:
+                type: string
+                minLength: 1
+            animal:
+                type: string
+            age:
+                type: integer
+                format: int32

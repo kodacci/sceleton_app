@@ -1,0 +1,547 @@
+{
+	"info": {
+		"_postman_id": "44f86d8b-53db-44dc-b5b8-d894d4042b1d",
+		"name": "users",
+		"description": "Sceleton test app API\n\nContact Support:\n Name: Andrey Ryabtsev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/users/signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing up with new user should be with status 201 and success true in body', function () {\r",
+							"    pm.response.to.have.status(201)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"email\": \"test@domain.com\",\r",
+							"        \"username\": \"Andrey\",\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"test@domain.com\",\n    \"username\": \"Andrey\",\n    \"password\": \"very_safe_password\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/signup with bad email field",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing up with bad email field should be with status 400 and success false in body', () => {\r",
+							"    pm.response.to.have.status(400)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.success).to.eql(false)\r",
+							"    pm.expect(body.message).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"tedomaom\",\n    \"username\": \"Andrey\",\n    \"password\": \"very_safe_password\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/signup when user already exists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing up with already existing user should be with status 409 and success false in body', () => {\r",
+							"    pm.response.to.have.status(409)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.success).to.eql(false)\r",
+							"    pm.expect(body.message).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@domain.com\",\r\n    \"username\": \"Andrey\",\r\n    \"password\": \"very_safe_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signup",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/signin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing in with right credentials should be with status 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Body should have auth and refresh tokens', () => {\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.accessToken).to.be.a('string')\r",
+							"    pm.expect(body.refreshToken).to.be.a('string')\r",
+							"\r",
+							"    pm.collectionVariables.set('accessToken', body.accessToken)\r",
+							"    pm.collectionVariables.set('refreshToken', body.refreshToken)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@domain.com\",\r\n    \"password\": \"very_safe_password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Getting existing user should be with status 200 and user data in body', function() {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({\r",
+							"        \"email\": \"test@domain.com\",\r",
+							"        \"username\": \"Andrey\"\r",
+							"    })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": "test@domain.com",
+							"description": "(Required) User email"
+						}
+					]
+				},
+				"description": "Returns details about a particular user"
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:email for nonexistent user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Getting of nonexistent user should return 404 in status', () => {\r",
+							"    pm.response.to.have.status(404)\r",
+							"})\r",
+							"\r",
+							"pm.test('Body should have property success eql to false and have propetry message', () => {\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.success).to.eql(false)\r",
+							"    pm.expect(body.message).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": "nonexistent@domain.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Should return status 200 and success=true in body on valid update', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.username).to.eql('updated_username')\r",
+							"    pm.expect(body.email).to.eql('test@domain.com')\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"updated_username\",\r\n    \"password\": \"very_safe_password2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/:email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": "test@domain.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/signin after password change",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Signing in with right credentials should be with status 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Body should have auth and refresh tokens', () => {\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.accessToken).to.be.a('string')\r",
+							"    pm.expect(body.refreshToken).to.be.a('string')\r",
+							"\r",
+							"    pm.collectionVariables.set('accessToken', body.accessToken)\r",
+							"    pm.collectionVariables.set('refreshToken', body.refreshToken)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@domain.com\",\r\n    \"password\": \"very_safe_password2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/signin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/refresh_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('On token refresh should return status 200 and new token pair in body', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body.refreshToken).to.be.a('string')\r",
+							"    pm.expect(body.accessToken).to.be.a('string')\r",
+							"\r",
+							"    pm.collectionVariables.set('accessToken', body.accessToken)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/refresh_token",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"refresh_token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users/:email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Deleting existing user should be with status 200 and success true in body', function() {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.expect(pm.response.json()).to.deep.equal({ \"success\": true, \"message\": \"OK\" })\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users/:email",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						":email"
+					],
+					"variable": [
+						{
+							"key": "email",
+							"value": "test@domain.com",
+							"description": "(Required) User email"
+						}
+					]
+				},
+				"description": "Deletes usser by email"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api/v1"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	]
+}
